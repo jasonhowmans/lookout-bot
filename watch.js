@@ -9,17 +9,19 @@
  * @todo Make better outputs (SMS, Email etc)
  *
  * Instructions:
- *  Simply give it a URL and leave it to run. It will speak when it's done.
+ *  Simply give it a URL and a update interval, then sit back and wait...
  *  example:
- *    `$ node watch 'http://www.google.com'`
+ *    `$ node watch 'http://www.google.com' 100`
  */
 
  const q = require('q');
  const md5 = require('md5');
+ const say = require('say');
  const request = require('request');
 
 (function () {
   let masterHash = null;
+  let checkInterval;
 
   run();
 
@@ -30,7 +32,7 @@
     createMasterHash(url)
       .then(() => {
         console.log('Master hash created: %s', masterHash);
-        checkUrlEvery(url, 8)
+        checkTillChanged(url, 8)
       });
   }
 
@@ -66,7 +68,6 @@
   * @returns {String} -- A md5 of the webpage
   */
   function hashWebpage(str) {
-    console.log(md5(str));
     return md5(str);
   }
 
@@ -76,21 +77,34 @@
    * @returns {Bool} -- Is different?
    */
   function hasChanged(hash) {
+    return hash !== masterHash;
+  }
 
+
+  function pushChangeNotification() {
+    console.log('⚡️ Content at URL has changed ⚡️');
+    say.speak(`Oh shit, hurry, the page content has changed`);
   }
 
   /**!
-   * Check the url every n seconds
+   * Check the url every n seconds, and exits when the content changes
    * @param {String} url
    * @param {Number} interval -- the interval to use when re-checking the page
    */
-  function checkUrlEvery(url, interval) {
+  function checkTillChanged(url, interval) {
     let seconds = parseInt(interval) * 1000;
-    let theInterval = setInterval(hasItChanged, seconds)
+    checkInterval = setInterval(checkUrl, seconds)
 
-    function hasItChanged() {
+    function checkUrl() {
       loadUrl(url)
         .then(hashWebpage)
+        .then(hasChanged)
+        .then((goneChanged) => {
+          if (goneChanged && checkInterval) {
+            clearInterval(checkInterval);
+            pushChangeNotification();
+          }
+        });
     }
   }
 

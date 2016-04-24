@@ -20,6 +20,7 @@
  const request = require('request');
 
 (function () {
+  const secondsToWait = 10;
   let masterHash = null;
   let checkInterval;
 
@@ -32,7 +33,7 @@
     createMasterHash(url)
       .then(() => {
         console.log('Master hash created: %s', masterHash);
-        checkTillChanged(url, 8)
+        checkTillChanged(url, secondsToWait)
       });
   }
 

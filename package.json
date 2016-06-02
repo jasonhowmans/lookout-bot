@@ -1,17 +1,1 @@
-{
-  "name": "lookout-bot",
-  "version": "0.1.1",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
-  "dependencies": {
-    "md5": "^2.1.0",
-    "q": "^1.4.1",
-    "request": "^2.72.0",
-    "say": "^0.9.0"
-  }
-}
+My name is jason and I think I'm cool.
